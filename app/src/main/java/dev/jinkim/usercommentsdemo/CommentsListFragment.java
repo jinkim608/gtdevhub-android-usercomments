@@ -42,6 +42,7 @@ public class CommentsListFragment extends ListFragment {
         return rootView;
     }
 
+    /* Initialize list view after the fragment view is inflated */
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         initializeViews();
@@ -57,13 +58,16 @@ public class CommentsListFragment extends ListFragment {
         });
     }
 
-
+    /**
+     * Make a web call to retrieve comments from the usercomments API.
+     * When the results are available (parsed by Gson), list will be updated
+     */
     private void retrieveComments() {
         RestClient.ApiService rest = new RestClient().getApiService();
         rest.listComments(app.getSessionName() + "=" + app.getSessionId(), new Callback<List<Comment>>() {
             @Override
             public void success(List<Comment> comments, Response response) {
-                Log.d(TAG, "Comments retrieved: " + String.valueOf(comments.size()));
+                Log.d(TAG, "Successfully retrieved comments: " + String.valueOf(comments.size()));
                 updateList(comments);
             }
 
@@ -74,6 +78,10 @@ public class CommentsListFragment extends ListFragment {
         });
     }
 
+    /**
+     * Update the list view UI with the retrieved comments
+     * @param comments
+     */
     private void updateList(List<Comment> comments) {
         adapter.clear();
         adapter.addAll(comments);

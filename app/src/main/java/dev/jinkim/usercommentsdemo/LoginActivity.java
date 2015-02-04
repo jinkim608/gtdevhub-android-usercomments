@@ -25,8 +25,6 @@ public class LoginActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-//        getWindow().requestFeature(Window.FEATURE_PROGRESS);
-//        requestWindowFeature(Window.FEATURE_INDETERMINATE_PROGRESS);
         setContentView(R.layout.activity_login);
 
         mActivity = this;
@@ -35,16 +33,17 @@ public class LoginActivity extends Activity {
         webView = (WebView) findViewById(R.id.wv_gt_login);
         webView.clearCache(true);
         webView.clearHistory();
+        webView.clearFormData();
         webView.loadUrl(LOGINURL);
 
         webView.setWebViewClient(new WebViewClient() {
             @Override
             public boolean shouldOverrideUrlLoading(WebView view, String url) {
-                if (!url.contains("usercomments://")) {
-                    view.loadUrl(url);
 
-                } else {
-                    // extract the data (session name and id) from the redirect url
+                // check if the redirect url contains the session info
+                if (url.contains("usercomments://") && url.contains("sessionId")) {
+
+                    // parse the data if this redirect url contains sessionName and sessionId
                     String[] splitParams = url.split("\\?")[1].split("&");
                     String sessionName = splitParams[0].split("=")[1];
                     String sessionId = splitParams[1].split("=")[1];
@@ -57,6 +56,13 @@ public class LoginActivity extends Activity {
 
                     Intent in = new Intent(mActivity, MainActivity.class);
                     startActivity(in);
+                    finish();
+
+                } else {
+
+                    // load the redirect url
+                    Log.d(TAG, "### Redirect URL: " + url);
+                    view.loadUrl(url);
                 }
 
                 return true;
@@ -98,20 +104,5 @@ public class LoginActivity extends Activity {
 
         webView.getSettings().setJavaScriptEnabled(true);
 
-//        setProgressBarIndeterminateVisibility(true);
-//        setProgressBarVisibility(true);
-
-
-//        final Activity activity = this;
-//        webView.setWebChromeClient(new WebChromeClient() {
-//            public void onProgressChanged(WebView view, int progress) {
-//                // Activities and WebViews measure progress with different scales.
-//                // The progress meter will automatically disappear when we reach 100%
-//                activity.setProgress(progress * 100);
-//            }
-//        });
-
     }
-
-
 }
