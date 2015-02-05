@@ -9,6 +9,19 @@ public class Singleton extends Application {
 
     private static Singleton mInstance = null;
 
+    private String sessionName;
+    private String sessionId;
+
+    private Singleton() {
+    }
+
+    public static Singleton getInstance() {
+        if (mInstance == null) {
+            mInstance = new Singleton();
+        }
+        return mInstance;
+    }
+
     public String getSessionName() {
         return sessionName;
     }
@@ -24,19 +37,4 @@ public class Singleton extends Application {
     public void setSessionId(String sessionId) {
         this.sessionId = sessionId;
     }
-
-    private String sessionName;
-    private String sessionId;
-
-    private Singleton() {
-        sessionName = "Hello";
-    }
-
-    public static Singleton getInstance() {
-        if (mInstance == null) {
-            mInstance = new Singleton();
-        }
-        return mInstance;
-    }
-
 }

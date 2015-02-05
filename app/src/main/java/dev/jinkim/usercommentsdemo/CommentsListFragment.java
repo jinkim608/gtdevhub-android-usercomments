@@ -67,20 +67,21 @@ public class CommentsListFragment extends ListFragment {
         rest.listComments(app.getSessionName() + "=" + app.getSessionId(), new Callback<List<Comment>>() {
             @Override
             public void success(List<Comment> comments, Response response) {
-                Log.d(TAG, "Successfully retrieved comments: " + String.valueOf(comments.size()));
+                Log.d(TAG, "### Successfully retrieved comments: " + String.valueOf(comments.size()));
                 updateList(comments);
             }
 
             @Override
             public void failure(RetrofitError error) {
-                Log.d(TAG, "Failure in retrieving comments: " + error);
+                Log.d(TAG, "### Failure in retrieving comments: " + error);
             }
         });
     }
 
     /**
      * Update the list view UI with the retrieved comments
-     * @param comments
+     *
+     * @param comments list of Comment objects to update in the list view
      */
     private void updateList(List<Comment> comments) {
         adapter.clear();

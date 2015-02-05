@@ -1,13 +1,14 @@
 package dev.jinkim.usercommentsdemo;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+
+import com.alertdialogpro.AlertDialogPro;
 
 /**
  * Created by Jin on 2/3/15.
@@ -30,6 +31,7 @@ public class LoginActivity extends Activity {
         mActivity = this;
         app = Singleton.getInstance();
 
+        /* we will use webview to have user login on login.gatech */
         webView = (WebView) findViewById(R.id.wv_gt_login);
         webView.clearCache(true);
         webView.clearHistory();
@@ -48,18 +50,18 @@ public class LoginActivity extends Activity {
                     String sessionName = splitParams[0].split("=")[1];
                     String sessionId = splitParams[1].split("=")[1];
 
+                    // save these in the app state
                     app.setSessionName(sessionName);
                     app.setSessionId(sessionId);
 
                     // TODO: Remove this for production of your app
-                    Log.d(TAG, "GT Login successful: " + sessionName + "&" + sessionId);
+                    Log.d(TAG, "### GT Login successful: " + sessionName + "&" + sessionId);
 
                     Intent in = new Intent(mActivity, MainActivity.class);
                     startActivity(in);
                     finish();
 
                 } else {
-
                     // load the redirect url
                     Log.d(TAG, "### Redirect URL: " + url);
                     view.loadUrl(url);
@@ -68,41 +70,20 @@ public class LoginActivity extends Activity {
                 return true;
             }
 
-            public void onReceivedError(WebView view, int errorCode, String description, String failingUrl) {
-                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(
-                        LoginActivity.this);
-
-                alertDialogBuilder.setTitle("Refresh page");
-                alertDialogBuilder
-                        .setMessage("Login page has failed to load. Would you like to try again?")
-                        .setCancelable(false)
-                        .setPositiveButton("Refresh", new DialogInterface.OnClickListener() {
-                            public void onClick(DialogInterface dialog,
-                                                int id) {
-                                // if this button is clicked, just close
-                                // the dialog box and do nothing
-                                webView.reload();
+            public void onReceivedError(final WebView view, int errorCode, String description, String failingUrl) {
+                AlertDialogPro.Builder builder = new AlertDialogPro.Builder(mActivity);
+                builder.setMessage("Failed to load the login page")
+                        .setPositiveButton("Retry", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                view.reload();
                             }
                         })
-
-                        .setNegativeButton("Cancel",
-                                new DialogInterface.OnClickListener() {
-                                    public void onClick(DialogInterface dialog,
-                                                        int id) {
-                                        // if this button is clicked, just close
-                                        // the dialog box and do nothing
-                                        dialog.cancel();
-                                    }
-                                });
-                // create alert dialog
-                AlertDialog alertDialog = alertDialogBuilder.create();
-                alertDialog.show();
+                        .setNegativeButton("Cancel", null)
+                        .show();
 
             }
         });
-
-
         webView.getSettings().setJavaScriptEnabled(true);
-
     }
 }
